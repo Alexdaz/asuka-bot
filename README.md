@@ -1,4 +1,4 @@
-![alt text](https://raw.githubusercontent.com/Alexdaz/asuka-bot/main/Images/AsukaLogo.png)
+![alt text](https://raw.githubusercontent.com/Alexdaz/asuka-bot/master/Images/AsukaLogo.png)
 
 <p align="center">
   <a href="https://opensource.org/licenses/MIT/">
