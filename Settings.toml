@@ -1,0 +1,5 @@
+[settings]
+prefix = '$'
+activity = "@NERV"
+timezone = "America/New_York"
+debug = 0

@@ -1,17 +1,17 @@
-use std::env;
-use dotenvy::dotenv;
-
 use serenity::framework::standard::macros::command;
 use serenity::framework::standard::CommandResult;
 use serenity::model::prelude::Message;
 use serenity::prelude::Context;
 use serenity::builder::{CreateEmbed, CreateMessage};
 
+use crate::system::settings::load_config;
+
 #[command]
 pub async fn help(ctx: &Context, msg: &Message) -> CommandResult
 {
-    dotenv().ok();
-    let prefix: String = env::var("PREFIX").expect("There is no prefix.");
+    let config_data = load_config();
+
+    let prefix: char = config_data.settings.prefix;
     
     let embed: CreateEmbed = CreateEmbed::new()
         .color(0xE67E22)

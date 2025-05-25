@@ -22,7 +22,7 @@ macro_rules! perform_reaction {
       // Discard if it's our own reaction.
       if let Reaction(r) = $reaction_event {
         if r.user_id == Some($ctx.cache.current_user().id) {
-          a_print("Reaction added by self, ignoring".to_string());
+          a_print("Reaction added by self, ignoring");
           return;
         }
       }
@@ -41,7 +41,7 @@ macro_rules! perform_reaction {
           .lock()
           .await;
         if !poll_map.contains_key(&key) {
-          a_print("Message not in polls map, ignoring".to_string());
+          a_print("Message not in polls map, ignoring");
           return;
         }
       }
@@ -55,7 +55,9 @@ macro_rules! perform_reaction {
         .await;
       let poll = match poll_map.get_mut(&key) {
         None => {
-          a_print(format!("Failed to get poll for {:?}", key));
+          let msg: String = format!("Failed to get poll for {:?}", key);
+          
+          a_print(&msg);
           return;
         }
         Some(poll) => poll,
@@ -81,7 +83,7 @@ macro_rules! perform_reaction {
             f(poll, Some(number));
           }
           _ => {
-            a_print("Unknown emoji in reaction, ignoring".to_string());
+            a_print("Unknown emoji in reaction, ignoring");
             return;
           }
         },
@@ -95,7 +97,7 @@ macro_rules! perform_reaction {
         .await
         .expect("Failed to edit message");
 
-        a_print("Rerendered message".to_string());
+        a_print("Rerendered message");
     };
 }
 

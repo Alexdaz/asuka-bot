@@ -7,7 +7,7 @@ use serenity::builder::{CreateEmbed, CreateMessage};
 use serenity::model::prelude::Message;
 use serenity::prelude::Context;
 
-use reqwest::Client;
+use reqwest::{Client, StatusCode};
 
 use crate::structs::yugi_json::{Daum, Root};
 
@@ -26,20 +26,20 @@ pub async fn yugi(ctx: &Context, msg: &Message, args: Args) -> CommandResult
         ("name", &name)
     ];
 
-    let json: Root = Client::new()
-        .get(reqwest::Url::parse_with_params("https://db.ygoprodeck.com/api/v7/cardinfo.php", &params)?)
-        .timeout(Duration::from_secs(60 * 30))
-        .send()
-        .await?
-        .json()
-        .await?;
+    let response: reqwest::Response = Client::new()
+    .get(reqwest::Url::parse_with_params("https://db.ygoprodeck.com/api/v7/cardinfo.php", &params)?)
+    .timeout(Duration::from_secs(60 * 30))
+    .send()
+    .await?;
 
-    if json.data.len() == 0
+    if response.status() == StatusCode::BAD_REQUEST 
     {
         msg.reply(&ctx.http, "Baka! That card does not exist 🤬").await?;
         return Ok(());
     }
 
+    let json: Root = response.json().await?;
+    
     let data_card: &Daum = json.data.index(0);
 
     let embed: CreateEmbed = CreateEmbed::new()

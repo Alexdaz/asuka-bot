@@ -4,11 +4,7 @@ mod commands;
 mod system;
 mod structs;
 
-use std::env;
-use dotenvy::dotenv;
-
 use serenity::client::EventHandler;
-
 use serenity::gateway::ActivityData;
 
 use serenity::{async_trait, Client};
@@ -17,6 +13,7 @@ use serenity::framework::standard::{
     macros::group,
     StandardFramework, Configuration
 };
+
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -35,16 +32,15 @@ use log4rs::append::file::FileAppender;
 use log4rs::encode::pattern::PatternEncoder;
 use log4rs::config::{Appender, Config, Root};
 
+use system::security::{decrypt, encrypt_env_var, token_exists};
 use system::console::{a_print, banner};
+use system::settings::load_config;
 
 use crate::commands::poll::*;
 
 use commands::help::HELP_COMMAND;
-
 use commands::animedex::ANIMEDEX_COMMAND;
-
 use commands::felizjueves::FELIZJUEVES_COMMAND;
-
 use commands::yugi::YUGI_COMMAND;
 
 struct Handler;
@@ -62,7 +58,7 @@ impl EventHandler for Handler {
   }
 
   async fn reaction_remove(&self, ctx: Context, removed_reaction: Reaction) {
-    a_print("Single reaction remove".to_string());
+    a_print("Single reaction remove");
 
     perform_reaction! { (ctx, ReactionEvent::Reaction(&removed_reaction)) |poll, number| {
       let ans = &mut poll.answerers[number.unwrap()];
@@ -73,7 +69,7 @@ impl EventHandler for Handler {
   }
 
   async fn reaction_remove_all(&self, ctx: Context, channel_id: ChannelId, removed_from_message_id: MessageId) {
-    a_print("All reactions removed".to_string());
+    a_print("All reactions removed");
 
     perform_reaction! { (ctx, ReactionEvent::RemoveAll(channel_id, removed_from_message_id)) |poll, _| {
       for answers in poll.answerers.iter_mut() {
@@ -89,13 +85,10 @@ struct General;
 
 #[tokio::main]
 async fn main() {
-    dotenv().ok();
-    let action: String = env::var("ACTIVITY").expect("There is no activity.");
-    let prefix: String = env::var("PREFIX").expect("There is no prefix.");
-    let token:  String = env::var("DISCORD_TOKEN").expect("There is no token.");
-    let debug:  String = env::var("DEBUG").expect("Debug option is missing.");
 
-    if debug.eq("1")
+    let config_data: system::settings::Data = load_config();
+
+    if config_data.settings.debug == 1
     {
       let logfile: FileAppender = FileAppender::builder()
         .encoder(Box::new(PatternEncoder::new("{d([%Y.%m.%d %H:%M:%S]:)} | {({l}):5.5} | {f}:{L} — {m}{n}\n")))
@@ -109,14 +102,50 @@ async fn main() {
 
       log4rs::init_config(config).unwrap();
     }
+    
+    if token_exists() 
+    {
+      println!("Please enter your Discord token:");
+
+      let mut token: String = String::new();
+      
+      if let Err(e) = std::io::stdin().read_line(&mut token) 
+      {
+          let msg: String = format!("Error reading input: {}", e);
+
+          a_print(&msg);
+          return;
+      }
+
+      let token: &str = token.trim();
+
+      if token.is_empty() 
+      {
+          a_print("No token");
+      } 
+      else 
+      {
+          if let Err(e) = clearscreen::clear() 
+          {
+              let msg: String = format!("Failed to clear screen: {}", e);
+
+              a_print(&msg);
+          }
+
+          encrypt_env_var(token);
+      }
+    }
 
     let framework: StandardFramework = StandardFramework::new().group(&GENERAL_GROUP);
-    framework.configure(Configuration::new().prefix(prefix).case_insensitivity(true));
+    framework.configure(Configuration::new().prefix(config_data.settings.prefix).case_insensitivity(true));
 
-    let activity: ActivityData = ActivityData::custom(action);
+    let activity: ActivityData = ActivityData::custom(config_data.settings.activity);
 
     let intents: GatewayIntents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
-    let mut client: Client = Client::builder(token, intents)
+
+    let decrypted_token: String = decrypt();
+
+    let mut client: Client = Client::builder(decrypted_token, intents)
         .event_handler(Handler)
         .framework(framework)
         .type_map_insert::<PollsKey>(Arc::new(Mutex::new(PollsMap::new())))
@@ -124,7 +153,10 @@ async fn main() {
         .await
         .expect("Error creating client");
 
-    if let Err(why) = client.start().await {
-        a_print(format!("ERROR: {:?}", why));
+    if let Err(why) = client.start().await 
+    {
+        let msg: String = format!("ERROR: {:?}", why);
+
+        a_print(&msg);
     }
 }

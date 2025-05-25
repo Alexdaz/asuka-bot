@@ -1,22 +1,20 @@
-use std::env;
-
 use serenity::framework::standard::macros::command;
 use serenity::framework::standard::CommandResult;
 use serenity::model::prelude::Message;
 use serenity::prelude::{Context, Mentionable};
 use serenity::builder::{CreateAttachment, CreateEmbed, CreateMessage};
 
-use dotenvy::dotenv;
-
 use chrono::{DateTime, Datelike, Weekday, Utc};
+
+use crate::system::settings::load_config;
 
 #[command]
 #[description = "Te deseo un feliz jueves."]
 pub async fn felizjueves(ctx: &Context, msg: &Message) -> CommandResult 
 {
-    dotenv().ok();
+    let config_data = load_config();
 
-    let tz: String = env::var("TIME_ZONE").expect("Missing Time Zone!");
+    let tz: String = config_data.settings.timezone;
     
     let date: DateTime<Utc> = Utc::now();
 

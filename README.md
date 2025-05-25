@@ -21,20 +21,24 @@ Asuka-bot is a free bot for Discord that was created using Rust. I made this bot
 
 ### ⚙️ Config File
 
-The configuration file is contained within the `.env` file.
+The configuration file is contained within the `Settings.toml` file.
 
-- `PREFIX`: Prefix for commands.
-- `ACTIVITY`: Define an activity for the bot.
-- `TIME_ZONE`: Time zone for the felizjueves command.
-- `DISCORD_TOKEN`: The token used by the Discord bot.
-- `DEBUG`: The most important events of the bot should be logged into the console and in a file, for troubleshooting purposes. To start the log, enter `1` and `0` to stop it.
+- `prefix`: Prefix for commands.
+- `activity`: Define an activity for the bot.
+- `timezone`: Time zone for the felizjueves command.
+- `debug`: The most important events of the bot should be logged into the console and in a file, for troubleshooting purposes. To start the log, enter `1` and `0` to stop it.
 
 Example
 
 ```
-PREFIX='$'
-ACTIVITY=Napping...
-TIME_ZONE=America/New_York
-DISCORD_TOKEN=YOURTOKEN-123456789
-DEBUG=0
+[settings]
+prefix = '$'
+activity = "Napping..."
+timezone = "America/New_York"
+debug = 0
 ```
+If the file does not exist, it will be generated automatically.
+
+### 🔒 Token
+
+When you launch the bot for the first time, it will prompt you to enter the token generated from the Discord developer portal. After you’ve entered the token, it will be saved in a hidden and encrypted file that cannot be viewed or edited by anyone. The encryption algorithm used is AES-256-GCM.
