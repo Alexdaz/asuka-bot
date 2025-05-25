@@ -4,7 +4,7 @@
   <a href="https://opensource.org/licenses/MIT/">
       <img src="https://img.shields.io/badge/License-MIT-orange.svg" alt="Asuka-bot is released under the MIT license." />
   </a>
-  <img src="https://img.shields.io/badge/Release-1.2.0-blue" />
+  <img src="https://img.shields.io/badge/Release-1.3.0-blue" />
 </p>
 
 ### 💗 Asuka-bot
