@@ -4,7 +4,7 @@
   <a href="https://opensource.org/licenses/MIT/">
       <img src="https://img.shields.io/badge/License-MIT-orange.svg" alt="Asuka-bot is released under the MIT license." />
   </a>
-  <img src="https://img.shields.io/badge/Release-1.3.0-blue" />
+  <img src="https://img.shields.io/badge/Release-1.4.0-blue" />
 </p>
 
 ### 💗 Asuka-bot
@@ -42,3 +42,17 @@ If the file does not exist, it will be generated automatically.
 ### 🔒 Token
 
 When you launch the bot for the first time, it will prompt you to enter the token generated from the Discord developer portal. After you’ve entered the token, it will be saved in a hidden and encrypted file that cannot be viewed or edited by anyone. The encryption algorithm used is AES-256-GCM.
+
+### 🐋 Deployment
+
+First, create a `.env` file in the project's root directory. This file will store the token used by the Docker container for the bot.
+
+```
+$ echo 'DISCORD_TOKEN = "YOUR_TOKEN"' > .env
+```
+Then run the following Docker command.
+
+```
+$ docker compose up -d
+```
+This is for setting up a ready-to-use container with the bot. Alternatively, you can run the bot as an executable without needing to create a `.env` file.

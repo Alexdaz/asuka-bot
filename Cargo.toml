@@ -1,6 +1,6 @@
 [package]
 name = "asuka"
-version = "1.3.0"
+version = "1.4.0"
 authors = ["Alex Díaz"]
 edition = "2021"
 
@@ -9,7 +9,7 @@ colored = "3.0.0"
 clearscreen = "4.0.1"
 log = "0.4.27"
 log4rs = "1.3.0"
-toml = "0.8.22"
+toml = "0.8.23"
 chrono = "0.4.41"
 chrono-tz = "0.10.3"
 machine-uid = "0.5.3"
@@ -19,8 +19,7 @@ aes-gcm = "0.10.3"
 aes = "0.8.4"
 
 serde = { version = "1.0.219", features = ["derive"] }
-reqwest = { version = "0.12.15", features = ["blocking", "json"] }
+reqwest = { version = "0.12.19", features = ["blocking", "json"] }
 serde_json = "1.0.140"
-json = "0.12.4"
 serenity = "0.12.4"
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }

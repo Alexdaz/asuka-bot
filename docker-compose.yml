@@ -1,0 +1,9 @@
+services:
+  asuka:
+    build:
+      context: .
+      args:
+        TOKEN: ${DISCORD_TOKEN}
+    env_file:
+      - .env
+    image: asuka

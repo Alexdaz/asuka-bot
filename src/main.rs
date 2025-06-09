@@ -14,7 +14,9 @@ use serenity::framework::standard::{
     StandardFramework, Configuration
 };
 
+use std::process::exit;
 use std::sync::Arc;
+
 use tokio::sync::Mutex;
 
 use serenity::model::id::{MessageId, ChannelId};
@@ -103,7 +105,7 @@ async fn main() {
       log4rs::init_config(config).unwrap();
     }
     
-    if token_exists() 
+    if !token_exists() 
     {
       println!("Please enter your Discord token:");
 
@@ -122,6 +124,11 @@ async fn main() {
       if token.is_empty() 
       {
           a_print("No token");
+
+          #[cfg(target_os = "linux")]
+          {
+              exit(1);
+          }
       } 
       else 
       {
@@ -130,9 +137,20 @@ async fn main() {
               let msg: String = format!("Failed to clear screen: {}", e);
 
               a_print(&msg);
+              
+              #[cfg(target_os = "linux")]
+              {
+                  exit(1);
+              }
           }
 
           encrypt_env_var(token);
+
+          #[cfg(target_os = "linux")]
+          {
+              println!("Please execute again to take effect...");
+              exit(0);
+          }
       }
     }
 

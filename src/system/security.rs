@@ -4,6 +4,7 @@ use std::fs::File;
 use aes_gcm::aead::rand_core::RngCore;
 use aes_gcm::{Aes256Gcm, Key, Nonce};
 use aes_gcm::aead::{Aead, KeyInit, OsRng};
+
 use sha2::{Digest, Sha256};
 
 use crate::system::console::a_print;
@@ -64,10 +65,10 @@ fn decrypt_value(var: &EncryptedVar, key: &[u8]) -> String
     }
 }
 
-pub fn encrypt_env_var(var_name: &str) 
+pub fn encrypt_env_var(token: &str) 
 {
     let key: [u8; 32] = generate_key();
-    let encrypted: EncryptedVar = encrypt_value(var_name, &key);
+    let encrypted: EncryptedVar = encrypt_value(token, &key);
 
     let mut file: File = File::create(ENCRYPTED_ENV_PATH).expect("Failed to create file");
     file.write_all(&encrypted.nonce).expect("Error writing nonce");
@@ -78,7 +79,7 @@ pub fn encrypt_env_var(var_name: &str)
 
 pub fn token_exists() -> bool 
 {
-    return !Path::new(ENCRYPTED_ENV_PATH).exists();
+    return Path::new(ENCRYPTED_ENV_PATH).exists();
 }
 
 pub fn decrypt() -> String 
