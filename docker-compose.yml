@@ -7,3 +7,5 @@ services:
     env_file:
       - .env
     image: asuka
+    restart: unless-stopped
+    user: asuka

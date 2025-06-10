@@ -1,4 +1,4 @@
-FROM debian:stable
+FROM debian:stable-slim AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -22,13 +22,16 @@ RUN apt-get update && apt-get install libcurl4 libssl3 uuid-runtime -y
 
 RUN uuidgen > /etc/machine-id
 
+RUN adduser --disabled-password --gecos "" asuka
+USER asuka
+
 WORKDIR /app
 
-RUN mkdir -p /app/assets
+RUN mkdir -p /app/assets && chown -R asuka:asuka /app
 
-COPY --from=0 /app/Settings.toml /app
-COPY --from=0 /app/assets/jueves.gif /app/assets
-COPY --from=0 /app/target/release/asuka /app
+COPY --chown=asuka:asuka --from=builder /app/Settings.toml /app
+COPY --chown=asuka:asuka --from=builder /app/assets/jueves.gif /app/assets
+COPY --chown=asuka:asuka --from=builder /app/target/release/asuka /app
 
 RUN echo $DTOKEN | ./asuka
 
