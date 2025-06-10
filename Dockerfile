@@ -1,8 +1,8 @@
-FROM debian:12.11
+FROM debian:stable
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install curl pkg-config libssl-dev build-essential libpq-dev -y
+RUN apt-get update && apt-get install curl pkg-config libssl-dev build-essential -y
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
@@ -10,7 +10,7 @@ WORKDIR /app
 COPY ./ /app
 RUN make prod
 
-FROM debian:12.11
+FROM debian:stable-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -18,7 +18,7 @@ ARG TOKEN
 
 ENV DTOKEN=$TOKEN
 
-RUN apt-get update && apt-get install curl pkg-config libssl-dev build-essential libpq-dev uuid-runtime -y
+RUN apt-get update && apt-get install libcurl4 libssl3 uuid-runtime -y
 
 RUN uuidgen > /etc/machine-id
 
