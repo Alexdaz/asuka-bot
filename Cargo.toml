@@ -1,6 +1,6 @@
 [package]
 name = "asuka"
-version = "1.4.1"
+version = "1.4.2"
 authors = ["Alex Díaz"]
 edition = "2021"
 
