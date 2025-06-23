@@ -4,7 +4,7 @@
   <a href="https://opensource.org/licenses/MIT/">
       <img src="https://img.shields.io/badge/License-MIT-orange.svg" alt="Asuka-bot is released under the MIT license." />
   </a>
-  <img src="https://img.shields.io/badge/Release-1.4.0-blue" />
+  <img src="https://img.shields.io/badge/Release-1.4.1-blue" />
 </p>
 
 ### 💗 Asuka-bot
@@ -48,7 +48,7 @@ When you launch the bot for the first time, it will prompt you to enter the toke
 First, create a `.env` file in the project's root directory. This file will store the token used by the Docker container for the bot.
 
 ```
-$ echo 'DISCORD_TOKEN = "YOUR_TOKEN"' > .env
+$ echo 'DISCORD_TOKEN = "<YOUR_TOKEN>"' > .env
 ```
 Then run the following Docker command.
 

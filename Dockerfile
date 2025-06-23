@@ -18,21 +18,29 @@ ARG TOKEN
 
 ENV DTOKEN=$TOKEN
 
-RUN apt-get update && apt-get install libcurl4 libssl3 uuid-runtime -y
-
-RUN uuidgen > /etc/machine-id
+RUN apt-get update && \
+    apt-get install -y libcurl4 libssl3 uuid-runtime && \
+    touch .asukadocker && \
+    uuidgen > /etc/machine-id && \
+    apt-get purge -y --auto-remove uuid-runtime && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN adduser --disabled-password --gecos "" asuka
-USER asuka
+
+RUN mkdir -p /app
+
+COPY --chown=asuka:asuka --from=builder /app/Settings.toml /app
+COPY --chown=asuka:asuka --from=builder /app/assets /app/assets
+COPY --chown=asuka:asuka --from=builder /app/target/release/asuka /app/asuka
+
+RUN echo $DTOKEN | /app/asuka
+
+RUN mv .env.ask /app && chown -R asuka:asuka /app
 
 WORKDIR /app
 
-RUN mkdir -p /app/assets && chown -R asuka:asuka /app
+RUN rm -f /.asukadocker
 
-COPY --chown=asuka:asuka --from=builder /app/Settings.toml /app
-COPY --chown=asuka:asuka --from=builder /app/assets/jueves.gif /app/assets
-COPY --chown=asuka:asuka --from=builder /app/target/release/asuka /app
+USER asuka
 
-RUN echo $DTOKEN | ./asuka
-
-ENTRYPOINT [ "./asuka" ]
+ENTRYPOINT ["/app/asuka"]

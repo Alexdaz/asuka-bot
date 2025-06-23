@@ -37,6 +37,7 @@ use log4rs::config::{Appender, Config, Root};
 use system::security::{decrypt, encrypt_env_var, token_exists};
 use system::console::{a_print, banner};
 use system::settings::load_config;
+use system::os::is_a_container;
 
 use crate::commands::poll::*;
 
@@ -87,23 +88,6 @@ struct General;
 
 #[tokio::main]
 async fn main() {
-
-    let config_data: system::settings::Data = load_config();
-
-    if config_data.settings.debug == 1
-    {
-      let logfile: FileAppender = FileAppender::builder()
-        .encoder(Box::new(PatternEncoder::new("{d([%Y.%m.%d %H:%M:%S]:)} | {({l}):5.5} | {f}:{L} — {m}{n}\n")))
-        .build("log/asuka_bot.log").unwrap();
-
-      let config: Config = Config::builder()
-          .appender(Appender::builder().build("logfile", Box::new(logfile)))
-          .build(Root::builder()
-                     .appender("logfile")
-                     .build(LevelFilter::Info)).unwrap();
-
-      log4rs::init_config(config).unwrap();
-    }
     
     if !token_exists() 
     {
@@ -125,7 +109,7 @@ async fn main() {
       {
           a_print("No token");
 
-          #[cfg(target_os = "linux")]
+          if is_a_container()
           {
               exit(1);
           }
@@ -138,7 +122,7 @@ async fn main() {
 
               a_print(&msg);
               
-              #[cfg(target_os = "linux")]
+              if is_a_container()
               {
                   exit(1);
               }
@@ -146,12 +130,29 @@ async fn main() {
 
           encrypt_env_var(token);
 
-          #[cfg(target_os = "linux")]
+          if is_a_container()
           {
-              println!("Please execute again to take effect...");
+              println!("Restarting...");
               exit(0);
           }
       }
+    }
+
+    let config_data: system::settings::Data = load_config();
+
+    if config_data.settings.debug == 1
+    {
+      let logfile: FileAppender = FileAppender::builder()
+        .encoder(Box::new(PatternEncoder::new("{d([%Y.%m.%d %H:%M:%S]:)} | {({l}):5.5} | {f}:{L} — {m}{n}\n")))
+        .build("log/asuka_bot.log").unwrap();
+
+      let config: Config = Config::builder()
+          .appender(Appender::builder().build("logfile", Box::new(logfile)))
+          .build(Root::builder()
+                     .appender("logfile")
+                     .build(LevelFilter::Info)).unwrap();
+
+      log4rs::init_config(config).unwrap();
     }
 
     let framework: StandardFramework = StandardFramework::new().group(&GENERAL_GROUP);
