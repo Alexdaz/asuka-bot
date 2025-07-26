@@ -51,7 +51,7 @@ struct Handler;
 #[async_trait]
 impl EventHandler for Handler {
   async fn ready(&self, _: Context, ready: Ready) {
-    banner(ready.user.name.to_string());
+    banner(&ready.user.name);
   }
 
   async fn reaction_add(&self, ctx: Context, add_reaction: Reaction) {

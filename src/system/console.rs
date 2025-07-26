@@ -20,7 +20,7 @@ const TITLE: &str = r#"
 
 const TABS: &str = "\t\t\t";
 
-pub fn banner(username: String)
+pub fn banner(username: &str)
 {
     println!("{}", TITLE.truecolor(255, 144, 234));
     println!("{}Username: {}", TABS, username.truecolor(255, 144, 234));
