@@ -14,10 +14,6 @@ FROM debian:stable-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-ARG TOKEN
-
-ENV DTOKEN=$TOKEN
-
 RUN apt-get update && \
     apt-get install -y libcurl4 libssl3 uuid-runtime && \
     uuidgen > /etc/machine-id && \
@@ -25,7 +21,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN adduser --disabled-password --gecos "" asuka
-USER asuka
 
 WORKDIR /app
 
@@ -37,6 +32,9 @@ COPY --chown=asuka:asuka --from=builder /app/Settings.toml /app
 COPY --chown=asuka:asuka --from=builder /app/assets/jueves.gif /app/assets
 COPY --chown=asuka:asuka --from=builder /app/target/release/asuka /app
 
-RUN echo $DTOKEN | /app/asuka && rm -f .asukadocker
+RUN --mount=type=secret,id=discord_token \
+    cat /run/secrets/discord_token | /app/asuka && rm -f .asukadocker
+
+USER asuka
 
 ENTRYPOINT ["/app/asuka"]

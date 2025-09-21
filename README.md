@@ -4,7 +4,7 @@
   <a href="https://opensource.org/licenses/MIT/">
       <img src="https://img.shields.io/badge/License-MIT-orange.svg" alt="Asuka-bot is released under the MIT license." />
   </a>
-  <img src="https://img.shields.io/badge/Release-1.4.3-blue" />
+  <img src="https://img.shields.io/badge/Release-1.4.4-blue" />
 </p>
 
 ### 💗 Asuka-bot
@@ -45,14 +45,46 @@ When you launch the bot for the first time, it will prompt you to enter the toke
 
 ### 🐋 Deployment
 
-First, create a `.env` file in the project's root directory. This file will store the token used by the Docker container for the bot.
+First, make sure you have BuildKit activated.
+```
+export DOCKER_BUILDKIT=1
+```
+
+Create a `.txt` file in the project's root directory. This file will store the token used by the Docker container for the bot.
 
 ```
-$ echo 'DISCORD_TOKEN = "<YOUR_TOKEN>"' > .env
+$ echo "<YOUR_TOKEN>" > token.txt
 ```
 Then run the following Docker command.
 
 ```
 $ docker compose up -d
 ```
-This is for setting up a ready-to-use container with the bot. Alternatively, you can run the bot as an executable without needing to create a `.env` file.
+This is for setting up a ready-to-use container with the bot. Alternatively, you can run the bot as an executable without needing to create a `.txt` file.
+
+#### Option 2: Running Without Docker Compose
+
+You can run the container manually without using Docker Compose by following these steps:
+
+Again, make sure you have BuildKit activated.
+```
+export DOCKER_BUILDKIT=1
+```
+
+Create a `.txt` file in the project's root directory.
+
+```
+$ echo "<YOUR_TOKEN>" > token.txt
+```
+
+Build the Docker image, use the --secret flag to securely pass the token during build:
+
+```
+$ docker build --secret id=discord_token,src=token.txt -t asuka-bot .
+```
+
+Launch the container using the image you just built.
+
+```
+$ docker run asuka-bot
+```

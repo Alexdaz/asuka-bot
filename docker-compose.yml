@@ -2,10 +2,13 @@ services:
   asuka:
     build:
       context: .
-      args:
-        TOKEN: ${DISCORD_TOKEN}
-    env_file:
-      - .env
+      dockerfile: Dockerfile
+      secrets:
+        - discord_token
     image: asuka
     restart: unless-stopped
     user: asuka
+
+secrets:
+  discord_token:
+    file: ./token.txt

@@ -21,3 +21,6 @@ Cargo.lock
 
 # Environment values
 .env
+
+# Token
+token.txt

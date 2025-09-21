@@ -1,6 +1,7 @@
 use std::env;
 
 use colored::Colorize;
+use colored::ColoredString;
 
 use chrono::Utc;
 
@@ -19,18 +20,34 @@ const TITLE: &str = r#"
 "#;
 
 const TABS: &str = "\t\t\t";
+const BANNER_WIDTH: usize = 80;
+
+const PINK_COLOR: (u8, u8, u8) = (255, 144, 234);
+
+fn accent(text: &str) -> ColoredString 
+{
+    let (r, g, b) = PINK_COLOR;
+
+    return text.truecolor(r, g, b);
+}
 
 pub fn banner(username: &str)
 {
-    println!("{}", TITLE.truecolor(255, 144, 234));
-    println!("{}Username: {}", TABS, username.truecolor(255, 144, 234));
-    println!("{}Version: {}", TABS, VERSION.truecolor(255, 144, 234));
-    println!("{}OS: {}", TABS, format!("{}{}", env::consts::OS.chars().next().unwrap().to_uppercase(), 
-    &env::consts::OS[1..]).truecolor(255, 144, 234));
+    println!("{}", accent(TITLE));
+    println!("{}Username: {}", TABS, accent(username));
+    println!("{}Version: {}", TABS, accent(VERSION));
+    println!(
+        "{}OS: {}",
+        TABS,
+        accent(&format!(
+            "{}{}",
+            env::consts::OS[..1].to_uppercase(),
+            &env::consts::OS[1..]
+        ))
+    );
+    println!("{}Developed by: {}", TABS, accent(AUTHORS));
+    println!("{}", accent(&("\n".to_owned() + &"=".repeat(BANNER_WIDTH))));
     
-    println!("{}Developed by: {}", TABS, AUTHORS.truecolor(255, 144, 234));
-    println!("{}", "\n================================================================================"
-    .truecolor(255, 144, 234));
     a_print("It's alive!");
 }
 
@@ -42,6 +59,7 @@ pub fn a_print(text: &str)
     if config_data.settings.debug == 1
     {
         let date: String = Utc::now().format("[%Y.%m.%d %H:%M:%S]:").to_string();
-        println!("{} {}", date.truecolor(255, 144, 234), text.truecolor(255, 144, 234));
+
+        println!("{} {}", accent(&date), accent(text));
     }
 }
